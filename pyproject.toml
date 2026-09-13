@@ -44,7 +44,7 @@ line-length = 88
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "R", "RUF"]
 
 [tool.pywsl]
 allow-first-in-block = true
