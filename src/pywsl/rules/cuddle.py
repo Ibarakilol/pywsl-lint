@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from pywsl import diagnostics
 from pywsl.analysis import call_of, used_names
 from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.rules import Context, is_assignment, shares_name
+from pywsl.rules import Context, is_assignment, is_declaration, shares_name
 
 
 def check(ctx: Context) -> Iterator[Diagnostic]:
@@ -30,7 +30,7 @@ def _report(ctx: Context, name: str, **fields: object) -> Iterator[Diagnostic]:
 
 
 def _assign(ctx: Context) -> Iterator[Diagnostic]:
-    if is_assignment(ctx.prev):
+    if is_assignment(ctx.prev) or _both_declare(ctx):
         return
 
     yield from _report(ctx, "assign")
@@ -44,10 +44,14 @@ def _aug_assign(ctx: Context) -> Iterator[Diagnostic]:
 
 
 def _decl(ctx: Context) -> Iterator[Diagnostic]:
-    if ctx.prev.kind == "decl":
+    if _both_declare(ctx):
         return
 
     yield from _report(ctx, "decl")
+
+
+def _both_declare(ctx: Context) -> bool:
+    return is_declaration(ctx.stmt) and is_declaration(ctx.prev)
 
 
 def _for(ctx: Context) -> Iterator[Diagnostic]:

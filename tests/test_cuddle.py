@@ -293,3 +293,40 @@ def test_a_blank_line_above_a_leading_comment_separates_the_statement(lint):
         run()
     """
     assert lint(code, select=["if"]) == []
+
+
+def test_annotated_fields_may_cuddle_whether_or_not_they_have_a_value(lint):
+    code = """
+    @dataclass
+    class Config:
+        name: str
+        count: int = 0
+        flag: bool = False
+    """
+    assert lint(code) == []
+
+
+def test_a_bare_annotation_may_cuddle_an_annotated_assignment(lint):
+    assert lint("count: int = 0\nname: str\n", select=["decl", "after-decl"]) == []
+
+
+def test_a_plain_assignment_still_may_not_cuddle_an_annotation(lint):
+    assert lint("count: int\nplain = 5\n", select=["assign"]) == ["assign:2"]
+
+
+def test_a_docstring_is_not_an_expression_statement(lint):
+    code = """
+    def f():
+        \"\"\"Doc.\"\"\"
+        return 1
+    """
+    assert lint(code, select=["expr", "after-expr"]) == []
+
+
+def test_a_real_call_is_still_an_expression_statement(lint):
+    code = """
+    def f():
+        print("a")
+        return 1
+    """
+    assert lint(code, select=["after-expr"]) == ["after-expr:3"]

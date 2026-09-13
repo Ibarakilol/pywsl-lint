@@ -4,7 +4,7 @@ from collections.abc import Iterator
 
 from pywsl import diagnostics
 from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.rules import Context
+from pywsl.rules import Context, is_declaration
 
 _BLOCK_CHECKS = {
     "if": "after-if",
@@ -38,6 +38,9 @@ def check(ctx: Context) -> Iterator[Diagnostic]:
         return
 
     if previous.kind in _GROUPED and ctx.stmt.kind == previous.kind:
+        return
+
+    if is_declaration(previous) and is_declaration(ctx.stmt):
         return
 
     yield diagnostics.make(name, ctx.stmt.top, ctx.column, FixKind.INSERT_BLANK_ABOVE)

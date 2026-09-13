@@ -66,3 +66,8 @@ def is_assignment(statement: Stmt) -> bool:
         return node.value is not None
 
     return isinstance(node, ast.Assign | ast.AugAssign)
+
+
+def is_declaration(statement: Stmt) -> bool:
+    """An annotated name, with or without a value — both declare a field."""
+    return isinstance(statement.node, ast.AnnAssign)
