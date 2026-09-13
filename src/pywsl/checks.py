@@ -1,7 +1,5 @@
 """Registry of every check pywsl can report."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 PRIORITY_WHITESPACE = 0

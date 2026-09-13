@@ -1,7 +1,5 @@
 """Statement and block model built on top of the AST."""
 
-from __future__ import annotations
-
 import ast
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
@@ -32,18 +30,18 @@ class Stmt:
     bound: frozenset[str]
     used: frozenset[str]
 
-    blocks: list[Block] = field(default_factory=list)
+    blocks: "list[Block]" = field(default_factory=list)
 
     @property
     def is_block(self) -> bool:
         return self.kind in BLOCK_KINDS
 
     @property
-    def primary_body(self) -> list[Stmt]:
+    def primary_body(self) -> "list[Stmt]":
         return self.blocks[0].body if self.blocks else []
 
     @property
-    def other_bodies(self) -> list[list[Stmt]]:
+    def other_bodies(self) -> "list[list[Stmt]]":
         return [block.body for block in self.blocks[1:]]
 
 

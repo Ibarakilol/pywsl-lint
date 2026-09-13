@@ -1,7 +1,5 @@
 """Reading a Python file and classifying its physical lines."""
 
-from __future__ import annotations
-
 import ast
 import io
 import tokenize

@@ -1,7 +1,5 @@
 """Diagnostics and the edits that fix them."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum
 

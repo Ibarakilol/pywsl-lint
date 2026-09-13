@@ -1,7 +1,5 @@
 """Applies diagnostics as blank-line edits."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from pywsl import source as source_module

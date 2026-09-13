@@ -1,7 +1,5 @@
 """Finding the Python files to check."""
 
-from __future__ import annotations
-
 import os
 from collections.abc import Iterable
 from fnmatch import fnmatch

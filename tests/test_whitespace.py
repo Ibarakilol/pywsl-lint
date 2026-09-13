@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-
 def test_a_block_may_not_start_with_a_blank_line(lint):
     code = """
     def f():

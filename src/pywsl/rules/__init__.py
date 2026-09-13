@@ -1,7 +1,5 @@
 """Rule implementations and the context they are evaluated against."""
 
-from __future__ import annotations
-
 import ast
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass

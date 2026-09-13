@@ -1,7 +1,5 @@
 """Runs every rule over a source file."""
 
-from __future__ import annotations
-
 from pywsl.analysis import build_blocks
 from pywsl.config import Config
 from pywsl.diagnostics import Diagnostic, dedupe

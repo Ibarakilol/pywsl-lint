@@ -1,7 +1,5 @@
 """Cuddling rules: what may sit directly above a statement."""
 
-from __future__ import annotations
-
 import ast
 from collections.abc import Iterator
 

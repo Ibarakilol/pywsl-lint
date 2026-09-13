@@ -1,7 +1,5 @@
 """Rules requiring a blank line after a construct."""
 
-from __future__ import annotations
-
 from collections.abc import Iterator
 
 from pywsl import diagnostics

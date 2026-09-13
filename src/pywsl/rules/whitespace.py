@@ -1,7 +1,5 @@
 """Rules about blank lines that must not be there."""
 
-from __future__ import annotations
-
 from collections.abc import Iterator
 from itertools import pairwise
 

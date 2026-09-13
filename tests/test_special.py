@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-
 def test_append_may_cuddle_the_list_it_grows(lint):
     assert lint("items = []\nitems.append(value)\n", select=["append"]) == []
 

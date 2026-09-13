@@ -1,7 +1,5 @@
 """Rules that do not fit the plain cuddle or after-block shapes."""
 
-from __future__ import annotations
-
 import ast
 from collections.abc import Iterator
 

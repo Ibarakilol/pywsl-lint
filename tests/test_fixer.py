@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pywsl import source as source_module
 from pywsl.config import Config
 from pywsl.engine import check_source
