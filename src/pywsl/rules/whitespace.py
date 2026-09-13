@@ -52,6 +52,9 @@ def _leading(source: SourceFile, config: Config, block: Block) -> Iterator[Diagn
         return
 
     first = block.body[0].top
+    if not block.header or first <= block.header:
+        return
+
     if not source.is_blank(first - 1):
         return
 
