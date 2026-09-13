@@ -31,10 +31,19 @@ class Stmt:
     top: int
     bound: frozenset[str]
     used: frozenset[str]
+    blocks: list[Block] = field(default_factory=list)
 
     @property
     def is_block(self) -> bool:
         return self.kind in BLOCK_KINDS
+
+    @property
+    def primary_body(self) -> list[Stmt]:
+        return self.blocks[0].body if self.blocks else []
+
+    @property
+    def other_bodies(self) -> list[list[Stmt]]:
+        return [block.body for block in self.blocks[1:]]
 
 
 @dataclass
@@ -42,9 +51,9 @@ class Block:
     owner: ast.AST
     clause: str
     body: list[Stmt]
+    header: int = 0
     is_module: bool = False
     continuation: bool = False
-    parent_kinds: tuple[str, ...] = field(default_factory=tuple)
 
     @property
     def line_span(self) -> int:
@@ -60,6 +69,14 @@ def build_blocks(source: SourceFile) -> list[Block]:
     return blocks
 
 
+@dataclass(frozen=True)
+class Suite:
+    clause: str
+    body: list[ast.stmt]
+    header: int
+    continuation: bool = False
+
+
 def _collect(
     source: SourceFile,
     owner: ast.AST,
@@ -67,6 +84,7 @@ def _collect(
     body: Sequence[ast.stmt],
     blocks: list[Block],
     *,
+    header: int = 0,
     is_module: bool = False,
     continuation: bool = False,
 ) -> None:
@@ -79,49 +97,76 @@ def _collect(
             owner=owner,
             clause=clause,
             body=statements,
+            header=header,
             is_module=is_module,
             continuation=continuation,
         )
     )
     for statement in statements:
-        for child_clause, child_body, child_continuation in _suites(statement.node):
+        for suite in _suites(source, statement.node):
+            before = len(blocks)
             _collect(
                 source,
                 statement.node,
-                child_clause,
-                child_body,
+                suite.clause,
+                suite.body,
                 blocks,
-                continuation=child_continuation,
+                header=suite.header,
+                continuation=suite.continuation,
             )
+            if len(blocks) > before:
+                statement.blocks.append(blocks[before])
 
 
-def _suites(node: ast.stmt) -> Iterator[tuple[str, list[ast.stmt], bool]]:
+def _suites(source: SourceFile, node: ast.stmt) -> Iterator[Suite]:
+    def else_suite(body: list[ast.stmt], keyword: str = "else") -> Suite:
+        return Suite(keyword, body, _clause_line(source, node, keyword, body), True)
+
     if isinstance(node, ast.If):
-        yield "body", node.body, False
-        if node.orelse:
-            yield "orelse", node.orelse, not _is_elif(node)
+        yield Suite("body", node.body, node.lineno)
+        if node.orelse and _is_elif(node):
+            yield Suite("elif", node.orelse, node.orelse[0].lineno)
+        elif node.orelse:
+            yield else_suite(node.orelse)
     elif isinstance(node, TRY_NODES):
-        yield "body", node.body, False
+        yield Suite("body", node.body, node.lineno)
         for handler in node.handlers:
-            yield "handler", handler.body, True
+            yield Suite("except", handler.body, handler.lineno, True)
 
         if node.orelse:
-            yield "orelse", node.orelse, True
+            yield else_suite(node.orelse)
 
         if node.finalbody:
-            yield "finalbody", node.finalbody, True
+            yield else_suite(node.finalbody, "finally")
     elif isinstance(node, ast.For | ast.AsyncFor | ast.While):
-        yield "body", node.body, False
+        yield Suite("body", node.body, node.lineno)
         if node.orelse:
-            yield "orelse", node.orelse, True
+            yield else_suite(node.orelse)
     elif isinstance(node, ast.Match):
         for case in node.cases:
-            yield "case", case.body, False
+            yield Suite("case", case.body, case.pattern.lineno)
     elif isinstance(
         node,
         ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef | ast.With | ast.AsyncWith,
     ):
-        yield "body", node.body, False
+        yield Suite("body", node.body, node.lineno)
+
+
+def _clause_line(
+    source: SourceFile, owner: ast.stmt, keyword: str, body: Sequence[ast.stmt]
+) -> int:
+    indent = owner.col_offset
+    for line in range(body[0].lineno - 1, owner.lineno, -1):
+        if line not in source.code_lines:
+            continue
+
+        text = source.line(line)
+        if len(text) - len(text.lstrip()) == indent and text.strip().startswith(keyword):
+            return line
+
+        return 0
+
+    return 0
 
 
 def _is_elif(node: ast.If) -> bool:
