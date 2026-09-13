@@ -177,3 +177,21 @@ uv run pywsl-lint check src tests
 
 The test suite lints pywsl-lint's own source with its own rules, so the codebase
 cannot drift from what it enforces.
+
+### Releasing
+
+Publishing runs on a tag and needs no credentials: PyPI is configured to trust
+the `release.yml` workflow of this repository, so GitHub mints a short-lived
+token for the upload.
+
+```sh
+# 1. bump version in pyproject.toml, commit
+# 2. tag and push
+git tag -a v0.2.0 -m "pywsl-lint 0.2.0"
+git push origin main --follow-tags
+```
+
+The workflow runs the tests, `ruff` and pywsl-lint itself on 3.11 through 3.13,
+refuses to continue if the tag does not name the version in `pyproject.toml`,
+and only then builds and uploads. A version already on PyPI can never be
+replaced, so that guard is the difference between a typo and a burnt number.

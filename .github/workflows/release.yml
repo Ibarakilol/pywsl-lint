@@ -1,0 +1,58 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - run: uv sync --locked
+
+      - run: uv run ruff check src tests
+
+      - run: uv run ruff format --check src tests
+
+      - run: uv run pywsl-lint check src tests
+
+      - run: uv run pytest
+
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10
+
+      - name: Refuse to publish a version the tag does not name
+        run: |
+          version="$(uv version --short)"
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$version" != "$tag" ]; then
+            echo "tag $GITHUB_REF_NAME carries version $tag, pyproject says $version" >&2
+            exit 1
+          fi
+
+      - run: uv build
+
+      - run: uv publish --trusted-publishing always
