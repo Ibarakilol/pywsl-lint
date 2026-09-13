@@ -73,11 +73,11 @@ ruff check --fix . && ruff format . && pywsl format .
 | WSL001 | `assign` | An assignment may only cuddle another assignment. |
 | WSL002 | `aug-assign` | `x += 1` follows the same rule as `assign`. |
 | WSL003 | `branch` | `break` / `continue` may only cuddle inside a block of at most `branch-max-lines` lines. |
-| WSL004 | `decl` | A bare annotation (`x: int`) never cuddles code — but may cuddle another bare annotation. |
+| WSL004 | `decl` | A bare annotation (`x: int`) never cuddles code — but annotated names cuddle each other, with or without a value. |
 | WSL005 | `for` | A `for` may only cuddle an assignment used in its target or iterable. |
 | WSL006 | `while` | A `while` may only cuddle an assignment used in its condition. |
 | WSL007 | `if` | An `if` may only cuddle an assignment used in its condition. |
-| WSL008 | `expr` | A bare call may only cuddle an assignment it uses. |
+| WSL008 | `expr` | A bare call may only cuddle an assignment it uses. Docstrings are not calls and are exempt. |
 | WSL009 | `return` | A `return` needs a blank line above it in a block longer than `branch-max-lines` lines. |
 | WSL010 | `with` | A `with` may only cuddle an assignment used in its context expression. |
 | WSL011 | `try` | A `try` may only cuddle an assignment used by the code it guards. |
@@ -145,15 +145,26 @@ name (`if`), a code (`WSL007`), a code prefix (`WSL00`) or `ALL`.
 | `label`, `select`, `goto`, `fallthrough` | dropped — no Python equivalent |
 | `assign-exclusive` | dropped — Python has no `:=` / `=` distinction for statements |
 
-Two rules needed a judgement call that wsl did not face:
+Three places needed a decision that wsl did not face, because Python has no
+closing brace and carries meaning in constructs Go spells differently:
 
-- **`trailing-whitespace`.** A dedent in Python does not close a block the way
-  `}` does, so a blank line after the last statement of a block usually belongs
-  to the separation the `after-*` rules require. The check therefore only fires
-  before a continuation clause (`elif`, `else`), where the blank is
-  unambiguously inside the block.
-- **`decl` and `after-decl`.** Consecutive bare annotations may cuddle, so
-  dataclass fields, `Protocol` bodies and `TypedDict` bodies read normally.
+- **`trailing-whitespace`.** A dedent does not close a block the way `}` does,
+  so a blank line after the last statement of a block is the same blank line
+  the `after-*` rules require below it. Forbidding and requiring it at once
+  would leave the fixer nothing to converge on, so the check only fires before
+  a continuation clause (`elif`, `else`), where the blank is unambiguously
+  inside the block.
+- **Annotated names.** `x: int` and `x: int = 0` both declare a field, so
+  `decl`, `assign` and `after-decl` treat them as one kind and let them cuddle
+  each other. Otherwise a dataclass with defaults would need a blank line in
+  the middle of its field list.
+- **Docstrings.** A string statement opening a module, class or function is not
+  a call, so `expr` and `after-expr` skip it. A block statement below one still
+  needs its blank line.
+
+A blank line before the next `case` of a `match` is deliberately left free:
+neither required nor forbidden, unless `case-max-lines` is set and the case
+above it is longer than that.
 
 ## Development
 
