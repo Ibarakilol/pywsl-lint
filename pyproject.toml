@@ -20,8 +20,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/pywsl/pywsl"
-Issues = "https://github.com/pywsl/pywsl/issues"
+Homepage = "https://github.com/Ibarakilol/pywsl"
+Repository = "https://github.com/Ibarakilol/pywsl"
+Issues = "https://github.com/Ibarakilol/pywsl/issues"
 
 [project.scripts]
 pywsl = "pywsl.cli:main"
