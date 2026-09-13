@@ -59,10 +59,7 @@ def shares_name(
             if any(bound & statement.used for statement in statements):
                 return True
 
-    if ctx.config.allow_first_in_block and body and bound & body[0].used:
-        return True
-
-    return False
+    return bool(ctx.config.allow_first_in_block and body and bound & body[0].used)
 
 
 def is_assignment(statement: Stmt) -> bool:

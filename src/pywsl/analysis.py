@@ -147,7 +147,11 @@ def _suites(source: SourceFile, node: ast.stmt) -> Iterator[Suite]:
             yield Suite("case", case.body, case.pattern.lineno)
     elif isinstance(
         node,
-        ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef | ast.With | ast.AsyncWith,
+        ast.FunctionDef
+        | ast.AsyncFunctionDef
+        | ast.ClassDef
+        | ast.With
+        | ast.AsyncWith,
     ):
         yield Suite("body", node.body, node.lineno)
 
@@ -161,7 +165,9 @@ def _clause_line(
             continue
 
         text = source.line(line)
-        if len(text) - len(text.lstrip()) == indent and text.strip().startswith(keyword):
+        if len(text) - len(text.lstrip()) == indent and text.strip().startswith(
+            keyword
+        ):
             return line
 
         return 0
@@ -363,9 +369,7 @@ def bound_names(node: ast.AST) -> set[str]:
     if isinstance(node, ast.Assign):
         for target in node.targets:
             names |= _target_names(target)
-    elif isinstance(node, ast.AnnAssign | ast.AugAssign):
-        names |= _target_names(node.target)
-    elif isinstance(node, ast.For | ast.AsyncFor):
+    elif isinstance(node, ast.AnnAssign | ast.AugAssign | ast.For | ast.AsyncFor):
         names |= _target_names(node.target)
     elif isinstance(node, ast.With | ast.AsyncWith):
         for item in node.items:

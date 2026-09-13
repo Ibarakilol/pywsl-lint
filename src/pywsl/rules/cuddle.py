@@ -46,6 +46,9 @@ def _aug_assign(ctx: Context) -> Iterator[Diagnostic]:
 
 
 def _decl(ctx: Context) -> Iterator[Diagnostic]:
+    if ctx.prev.kind == "decl":
+        return
+
     yield from _report(ctx, "decl")
 
 

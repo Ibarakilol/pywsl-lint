@@ -1,0 +1,49 @@
+"""Finding the Python files to check."""
+
+from __future__ import annotations
+
+import os
+from collections.abc import Iterable
+from fnmatch import fnmatch
+from pathlib import Path
+
+from pywsl.config import Config
+
+SUFFIXES = frozenset({".py", ".pyi"})
+
+
+def collect(paths: Iterable[str | Path], config: Config) -> list[Path]:
+    patterns = (*config.exclude, *config.extend_exclude)
+    found: list[Path] = []
+    seen: set[Path] = set()
+    for raw in paths:
+        path = Path(raw)
+        if path.is_dir():
+            found.extend(_walk(path, patterns))
+        else:
+            found.append(path)
+
+    return [p for p in found if not (p in seen or seen.add(p))]
+
+
+def _walk(root: Path, patterns: tuple[str, ...]) -> list[Path]:
+    found: list[Path] = []
+    for directory, subdirs, files in os.walk(root):
+        base = Path(directory)
+        subdirs[:] = sorted(
+            d for d in subdirs if not _excluded(base / d, root, patterns)
+        )
+        for name in sorted(files):
+            path = base / name
+            if path.suffix in SUFFIXES and not _excluded(path, root, patterns):
+                found.append(path)
+
+    return found
+
+
+def _excluded(path: Path, root: Path, patterns: tuple[str, ...]) -> bool:
+    relative = path.relative_to(root).as_posix()
+    return any(
+        fnmatch(path.name, pattern) or fnmatch(relative, pattern)
+        for pattern in patterns
+    )

@@ -31,7 +31,9 @@ class Diagnostic:
         return "Remove blank line"
 
 
-def make(name: str, line: int, column: int, fix: FixKind, **fields: object) -> Diagnostic:
+def make(
+    name: str, line: int, column: int, fix: FixKind, **fields: object
+) -> Diagnostic:
     check = BY_NAME[name]
     return Diagnostic(
         code=check.code,

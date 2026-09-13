@@ -36,6 +36,7 @@ class SourceFile:
     lines: tuple[str, ...]
     newline: str
     final_newline: bool
+    encoding: str
     tree: ast.Module
     code_lines: frozenset[int]
     comment_lines: frozenset[int]
@@ -73,7 +74,7 @@ class SourceFile:
         return start + 1, end
 
 
-def from_text(text: str, path: str = "<string>") -> SourceFile:
+def from_text(text: str, path: str = "<string>", encoding: str = "utf-8") -> SourceFile:
     newline = _detect_newline(text)
     normalised = text.replace("\r\n", "\n").replace("\r", "\n")
     try:
@@ -95,6 +96,7 @@ def from_text(text: str, path: str = "<string>") -> SourceFile:
         lines=tuple(rows),
         newline=newline,
         final_newline=final_newline,
+        encoding=encoding,
         tree=tree,
         code_lines=frozenset(code_lines),
         comment_lines=frozenset(comment_lines),
@@ -106,7 +108,7 @@ def from_path(path: Path) -> SourceFile:
         encoding, _ = tokenize.detect_encoding(handle.readline)
 
     text = path.read_bytes().decode(encoding)
-    return from_text(text, str(path))
+    return from_text(text, str(path), encoding)
 
 
 def _scan(text: str, path: str) -> tuple[set[int], set[int]]:

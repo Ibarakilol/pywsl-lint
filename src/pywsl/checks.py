@@ -198,8 +198,7 @@ _CHECKS: tuple[Check, ...] = (
     Check(
         "WSL033",
         "except-immediate",
-        "except and error handling must follow the code it guards without a "
-        "blank line",
+        "except and error handling must follow the code it guards without a blank line",
         PRIORITY_SPECIAL,
     ),
     Check(

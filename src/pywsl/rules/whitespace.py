@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
+from itertools import pairwise
 
 from pywsl import diagnostics
 from pywsl.analysis import TRY_NODES, Block
@@ -13,7 +14,9 @@ from pywsl.source import SourceFile
 _TRY_CLAUSES = frozenset({"except", "else", "finally"})
 
 
-def check_block(source: SourceFile, config: Config, block: Block) -> Iterator[Diagnostic]:
+def check_block(
+    source: SourceFile, config: Config, block: Block
+) -> Iterator[Diagnostic]:
     if block.is_module or not block.body:
         return
 
@@ -28,7 +31,7 @@ def check_match(
         return
 
     cases = [block for block in blocks if block.clause == "case"]
-    for previous, current in zip(cases, cases[1:], strict=False):
+    for previous, current in pairwise(cases):
         if previous.line_span <= config.case_max_lines:
             continue
 
