@@ -15,6 +15,13 @@ APPEND_METHODS = frozenset({"append", "extend", "add", "insert"})
 
 BLOCK_KINDS = frozenset({"if", "for", "while", "with", "try", "match", "def", "class"})
 
+DOCSTRING_OWNERS: tuple[type[ast.AST], ...] = (
+    ast.Module,
+    ast.FunctionDef,
+    ast.AsyncFunctionDef,
+    ast.ClassDef,
+)
+
 TRY_NODES: tuple[type[ast.stmt], ...] = (ast.Try,)
 if hasattr(ast, "TryStar"):
     TRY_NODES = (ast.Try, ast.TryStar)
@@ -94,6 +101,8 @@ def _collect(
         return
 
     statements = _statements(source, body)
+    _mark_docstring(owner, clause, statements)
+
     blocks.append(
         Block(
             owner=owner,
@@ -121,6 +130,18 @@ def _collect(
 
             if len(blocks) > before:
                 statement.blocks.append(blocks[before])
+
+
+def _mark_docstring(owner: ast.AST, clause: str, statements: list[Stmt]) -> None:
+    if clause not in {"module", "body"} or not isinstance(owner, DOCSTRING_OWNERS):
+        return
+
+    node = statements[0].node
+    if not isinstance(node, ast.Expr) or not isinstance(node.value, ast.Constant):
+        return
+
+    if isinstance(node.value.value, str):
+        statements[0].kind = "docstring"
 
 
 def _suites(source: SourceFile, node: ast.stmt) -> Iterator[Suite]:
