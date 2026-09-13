@@ -26,6 +26,7 @@ EXIT_ERROR = 2
 @dataclass
 class FileReport:
     source: SourceFile
+
     diagnostics: list[Diagnostic] = field(default_factory=list)
     fixed_count: int = 0
     changed: bool = False
@@ -35,8 +36,10 @@ class FileReport:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
+
     if args.command is None:
         parser.print_help()
+
         return EXIT_ERROR
 
     try:
@@ -46,6 +49,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_lint(args)
     except ConfigError as error:
         print(f"error: {error}", file=sys.stderr)
+
         return EXIT_ERROR
     except BrokenPipeError:
         return EXIT_OK
@@ -57,26 +61,32 @@ def _parser() -> argparse.ArgumentParser:
         description="Whitespace linter for Python, in the spirit of wsl.",
     )
     parser.add_argument("--version", action="version", version=f"pywsl {__version__}")
+
     sub = parser.add_subparsers(dest="command")
 
     check = sub.add_parser("check", help="report blank-line violations")
     _add_common(check)
+
     check.add_argument("--fix", action="store_true", help="apply fixes in place")
+
     check.add_argument(
         "--output-format",
         choices=reporting.FORMATS,
         default="full",
         help="diagnostic output format (default: full)",
     )
+
     check.add_argument(
         "--statistics", action="store_true", help="count violations per check"
     )
+
     check.add_argument(
         "--exit-zero", action="store_true", help="always exit with status 0"
     )
 
     formatter = sub.add_parser("format", help="rewrite files with correct blank lines")
     _add_common(formatter)
+
     formatter.add_argument(
         "--check",
         action="store_true",
@@ -91,20 +101,29 @@ def _parser() -> argparse.ArgumentParser:
 
 def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("paths", nargs="*", default=["."], help="files or directories")
+
     parser.add_argument(
         "--diff", action="store_true", help="print the changes instead of applying them"
     )
+
     parser.add_argument("--config", type=Path, help="path to a pyproject.toml")
+
     parser.add_argument(
         "--isolated", action="store_true", help="ignore any configuration file"
     )
+
     parser.add_argument("--select", action="append", help="checks to enable")
+
     parser.add_argument("--extend-select", action="append", help="checks to add")
+
     parser.add_argument("--ignore", action="append", help="checks to disable")
+
     parser.add_argument("--extend-exclude", action="append", help="paths to skip")
+
     parser.add_argument(
         "--stdin-filename", help="name to report for source read from stdin"
     )
+
     parser.add_argument(
         "-q", "--quiet", action="store_true", help="only print problems"
     )
@@ -122,9 +141,11 @@ def _run_rules(args: argparse.Namespace) -> int:
             for check in checks.ALL_CHECKS
         ]
         print(json.dumps(payload, indent=2))
+
         return EXIT_OK
 
     width = max(len(check.name) for check in checks.ALL_CHECKS)
+
     for check in checks.ALL_CHECKS:
         mark = " " if check.default else "-"
         print(f"{check.code} {mark} {check.name:<{width}}  {check.summary}")
@@ -140,10 +161,13 @@ def _run_lint(args: argparse.Namespace) -> int:
 
     reports: list[FileReport] = []
     failures = 0
+
     for source, error, from_stdin in _read(args.paths or ["."], config, args):
         if source is None:
             print(_format_parse_error(error), file=sys.stderr)
+
             failures += 1
+
             continue
 
         reports.append(
@@ -172,6 +196,7 @@ def _process(
         changed=result.changed,
         diff=_diff(source, result.text) if result.changed else "",
     )
+
     if not write:
         return report
 
@@ -185,6 +210,7 @@ def _process(
 
 def _emit(reports: list[FileReport], args: argparse.Namespace, failures: int) -> int:
     changed = sum(1 for report in reports if report.changed)
+
     if args.diff:
         for report in reports:
             if report.diff:
@@ -192,6 +218,7 @@ def _emit(reports: list[FileReport], args: argparse.Namespace, failures: int) ->
 
         if not args.quiet:
             sys.stdout.flush()
+
             print(
                 _changed_summary(changed, len(reports), checked=True), file=sys.stderr
             )
@@ -209,6 +236,7 @@ def _emit(reports: list[FileReport], args: argparse.Namespace, failures: int) ->
 
     found = [d for report in reports for d in report.diagnostics]
     entries = [(r.source, r.diagnostics) for r in reports if r.diagnostics]
+
     if args.statistics:
         text = reporting.statistics(found)
         if text:
@@ -235,6 +263,7 @@ def _changed_summary(changed: int, total: int, *, checked: bool = False) -> str:
     verb = "would be reformatted" if checked else "reformatted"
     unchanged = total - changed
     parts = []
+
     if changed:
         parts.append(f"{changed} file{'s' if changed != 1 else ''} {verb}")
 
@@ -297,6 +326,7 @@ def _diff(source: SourceFile, fixed: str) -> str:
     patch = difflib.unified_diff(
         before, after, fromfile=source.path, tofile=source.path, lineterm="\n"
     )
+
     return "".join(patch).rstrip("\n")
 
 

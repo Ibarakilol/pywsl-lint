@@ -30,6 +30,7 @@ def fix(source: SourceFile, config: Config) -> FixResult:
     original = _render(source)
     current = source
     text = original
+
     for _ in range(MAX_PASSES):
         found = check_source(current, config)
         if not found:
@@ -53,6 +54,7 @@ def fix(source: SourceFile, config: Config) -> FixResult:
 def apply(source: SourceFile, diagnostics: list[Diagnostic]) -> str:
     inserts = {d.line for d in diagnostics if d.fix is FixKind.INSERT_BLANK_ABOVE}
     deletions: set[int] = set()
+
     for diagnostic in diagnostics:
         if diagnostic.fix is not FixKind.REMOVE_BLANK_ABOVE:
             continue
@@ -62,6 +64,7 @@ def apply(source: SourceFile, diagnostics: list[Diagnostic]) -> str:
             deletions.update(range(run[0], run[1] + 1))
 
     output: list[str] = []
+
     for number, text in enumerate(source.lines, start=1):
         if number in deletions:
             continue

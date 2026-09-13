@@ -52,3 +52,7 @@ allow-whole-block = false
 branch-max-lines = 2
 case-max-lines = 0
 cuddle-max-statements = 1
+
+[tool.ruff.lint.isort]
+known-first-party = ["pywsl"]
+known-local-folder = ["conftest"]

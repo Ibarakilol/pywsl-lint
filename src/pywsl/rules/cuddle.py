@@ -55,6 +55,7 @@ def _decl(ctx: Context) -> Iterator[Diagnostic]:
 def _for(ctx: Context) -> Iterator[Diagnostic]:
     node = ctx.stmt.node
     assert isinstance(node, ast.For | ast.AsyncFor)
+
     if _related(ctx, [node.iter, node.target]):
         return
 
@@ -64,6 +65,7 @@ def _for(ctx: Context) -> Iterator[Diagnostic]:
 def _while(ctx: Context) -> Iterator[Diagnostic]:
     node = ctx.stmt.node
     assert isinstance(node, ast.While)
+
     if _related(ctx, [node.test]):
         return
 
@@ -73,6 +75,7 @@ def _while(ctx: Context) -> Iterator[Diagnostic]:
 def _if(ctx: Context) -> Iterator[Diagnostic]:
     node = ctx.stmt.node
     assert isinstance(node, ast.If)
+
     if _related(ctx, [node.test]):
         return
 
@@ -82,7 +85,9 @@ def _if(ctx: Context) -> Iterator[Diagnostic]:
 def _with(ctx: Context) -> Iterator[Diagnostic]:
     node = ctx.stmt.node
     assert isinstance(node, ast.With | ast.AsyncWith)
+
     contexts = [item.context_expr for item in node.items]
+
     if _related(ctx, contexts):
         return
 
@@ -100,6 +105,7 @@ def _try(ctx: Context) -> Iterator[Diagnostic]:
 def _match(ctx: Context) -> Iterator[Diagnostic]:
     node = ctx.stmt.node
     assert isinstance(node, ast.Match)
+
     if _related(ctx, [node.subject]):
         return
 
@@ -149,6 +155,7 @@ def _related(ctx: Context, exprs: list[ast.AST]) -> bool:
 def _uses_bound_names(ctx: Context) -> bool:
     call = call_of(ctx.stmt.node)
     target = call if call is not None else ctx.stmt.node
+
     return bool(ctx.prev.bound & used_names(target))
 
 

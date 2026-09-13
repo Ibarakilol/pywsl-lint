@@ -21,6 +21,7 @@ def check_block(
         return
 
     yield from _leading(source, config, block)
+
     yield from _continuation(source, config, block)
 
 
@@ -77,6 +78,7 @@ def _continuation(
 
     is_try = block.clause in _TRY_CLAUSES and isinstance(block.owner, TRY_NODES)
     name = "except-immediate" if is_try else "trailing-whitespace"
+
     if not config.is_enabled(name):
         return
 

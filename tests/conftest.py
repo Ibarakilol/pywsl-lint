@@ -36,6 +36,7 @@ def lint():
     ) -> list[str]:
         source = source_module.from_text(normalise(code), "t.py")
         config = build_config(select, ignore, **options)
+
         return [f"{d.name}:{d.line}" for d in check_source(source, config)]
 
     return run

@@ -62,6 +62,7 @@ def test_wrong_option_types_are_rejected(table):
 def test_a_pyproject_without_our_table_uses_defaults(tmp_path):
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text('[project]\nname = "x"\n', encoding="utf-8")
+
     assert load(pyproject) == Config()
 
 
@@ -70,6 +71,7 @@ def test_a_pyproject_table_is_read(tmp_path):
     pyproject.write_text(
         "[tool.pywsl]\nbranch-max-lines = 4\nselect = ['if']\n", encoding="utf-8"
     )
+
     config = load(pyproject)
     assert config.branch_max_lines == 4
     assert config.enabled == {"if"}

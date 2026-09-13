@@ -15,6 +15,7 @@ def check_source(source: SourceFile, config: Config) -> list[Diagnostic]:
     found: list[Diagnostic] = []
     for block in build_blocks(source):
         found.extend(whitespace.check_block(source, config, block))
+
         for index, statement in enumerate(block.body):
             context = Context(source, config, block, index)
             for rule in _STATEMENT_RULES:

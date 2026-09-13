@@ -15,11 +15,14 @@ _EXPR_KINDS = frozenset({"expr", "append", "thread-start", "queue-put"})
 
 def check(ctx: Context) -> Iterator[Diagnostic]:
     yield from _sentinel_if(ctx)
+
     if not ctx.cuddled:
         return
 
     yield from _append(ctx)
+
     yield from _assign_expr(ctx)
+
     yield from _cuddle_group(ctx)
 
 
@@ -41,6 +44,7 @@ def _assign_expr(ctx: Context) -> Iterator[Diagnostic]:
 
     pair = {ctx.stmt.kind, ctx.prev.kind}
     assigning = is_assignment(ctx.stmt) or is_assignment(ctx.prev)
+
     if not assigning or not pair & _EXPR_KINDS:
         return
 
@@ -58,6 +62,7 @@ def _cuddle_group(ctx: Context) -> Iterator[Diagnostic]:
 
     group = 0
     index = ctx.index
+
     while index > 0 and ctx.block.body[index].top == ctx.block.body[index - 1].end + 1:
         group += 1
         index -= 1
@@ -96,7 +101,9 @@ def _is_sentinel_pair(ctx: Context) -> bool:
 
     node = ctx.stmt.node
     assert isinstance(node, ast.If)
+
     checked = _sentinel_name(node.test)
+
     return checked is not None and checked in previous.bound
 
 

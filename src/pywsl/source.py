@@ -23,6 +23,7 @@ _IGNORED_TOKENS = frozenset(
 class ParseError(Exception):
     def __init__(self, path: str, line: int, column: int, message: str) -> None:
         super().__init__(message)
+
         self.path = path
         self.line = line
         self.column = column
@@ -63,8 +64,10 @@ class SourceFile:
 
     def blank_run_above(self, number: int) -> tuple[int, int] | None:
         """Range of blank lines directly above ``number``, if any."""
+
         end = number - 1
         start = end
+
         while self.is_blank(start):
             start -= 1
 
@@ -77,6 +80,7 @@ class SourceFile:
 def from_text(text: str, path: str = "<string>", encoding: str = "utf-8") -> SourceFile:
     newline = _detect_newline(text)
     normalised = text.replace("\r\n", "\n").replace("\r", "\n")
+
     try:
         tree = ast.parse(normalised, filename=path)
     except SyntaxError as error:
@@ -87,6 +91,7 @@ def from_text(text: str, path: str = "<string>", encoding: str = "utf-8") -> Sou
     code_lines, comment_lines = _scan(normalised, path)
     rows = normalised.split("\n")
     final_newline = bool(rows) and rows[-1] == ""
+
     if final_newline:
         rows.pop()
 
@@ -108,6 +113,7 @@ def from_path(path: Path) -> SourceFile:
         encoding, _ = tokenize.detect_encoding(handle.readline)
 
     text = path.read_bytes().decode(encoding)
+
     return from_text(text, str(path), encoding)
 
 
@@ -115,6 +121,7 @@ def _scan(text: str, path: str) -> tuple[set[int], set[int]]:
     code: set[int] = set()
     comments: set[int] = set()
     readline = io.StringIO(text).readline
+
     try:
         for token in tokenize.generate_tokens(readline):
             if token.type == tokenize.COMMENT:

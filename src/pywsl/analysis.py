@@ -31,6 +31,7 @@ class Stmt:
     top: int
     bound: frozenset[str]
     used: frozenset[str]
+
     blocks: list[Block] = field(default_factory=list)
 
     @property
@@ -51,6 +52,7 @@ class Block:
     owner: ast.AST
     clause: str
     body: list[Stmt]
+
     header: int = 0
     is_module: bool = False
     continuation: bool = False
@@ -66,6 +68,7 @@ class Block:
 def build_blocks(source: SourceFile) -> list[Block]:
     blocks: list[Block] = []
     _collect(source, source.tree, "module", source.tree.body, blocks, is_module=True)
+
     return blocks
 
 
@@ -74,6 +77,7 @@ class Suite:
     clause: str
     body: list[ast.stmt]
     header: int
+
     continuation: bool = False
 
 
@@ -102,9 +106,11 @@ def _collect(
             continuation=continuation,
         )
     )
+
     for statement in statements:
         for suite in _suites(source, statement.node):
             before = len(blocks)
+
             _collect(
                 source,
                 statement.node,
@@ -114,6 +120,7 @@ def _collect(
                 header=suite.header,
                 continuation=suite.continuation,
             )
+
             if len(blocks) > before:
                 statement.blocks.append(blocks[before])
 
@@ -124,12 +131,14 @@ def _suites(source: SourceFile, node: ast.stmt) -> Iterator[Suite]:
 
     if isinstance(node, ast.If):
         yield Suite("body", node.body, node.lineno)
+
         if node.orelse and _is_elif(node):
             yield Suite("elif", node.orelse, node.orelse[0].lineno)
         elif node.orelse:
             yield else_suite(node.orelse)
     elif isinstance(node, TRY_NODES):
         yield Suite("body", node.body, node.lineno)
+
         for handler in node.handlers:
             yield Suite("except", handler.body, handler.lineno, True)
 
@@ -140,6 +149,7 @@ def _suites(source: SourceFile, node: ast.stmt) -> Iterator[Suite]:
             yield else_suite(node.finalbody, "finally")
     elif isinstance(node, ast.For | ast.AsyncFor | ast.While):
         yield Suite("body", node.body, node.lineno)
+
         if node.orelse:
             yield else_suite(node.orelse)
     elif isinstance(node, ast.Match):
@@ -160,6 +170,7 @@ def _clause_line(
     source: SourceFile, owner: ast.stmt, keyword: str, body: Sequence[ast.stmt]
 ) -> int:
     indent = owner.col_offset
+
     for line in range(body[0].lineno - 1, owner.lineno, -1):
         if line not in source.code_lines:
             continue
@@ -187,6 +198,7 @@ def _statements(source: SourceFile, body: Sequence[ast.stmt]) -> list[Stmt]:
     thread_names = _thread_names(body)
     statements: list[Stmt] = []
     previous_end = 0
+
     for node in body:
         start = _start_line(node)
         top = _extend_upwards(source, start, previous_end)
@@ -201,6 +213,7 @@ def _statements(source: SourceFile, body: Sequence[ast.stmt]) -> list[Stmt]:
                 used=frozenset(used_names(node)),
             )
         )
+
         previous_end = node.end_lineno or start
 
     return statements
@@ -224,6 +237,7 @@ def _extend_upwards(source: SourceFile, start: int, floor: int) -> int:
 
 def _thread_names(body: Sequence[ast.stmt]) -> frozenset[str]:
     names: set[str] = set()
+
     for node in body:
         if not isinstance(node, ast.Assign) or not isinstance(node.value, ast.Call):
             continue
@@ -399,6 +413,7 @@ def _mutated_names(value: ast.expr) -> set[str]:
         return set()
 
     root = _root_name(call.func.value)
+
     return {root} if root is not None else set()
 
 
@@ -420,4 +435,5 @@ def call_of(node: ast.stmt) -> ast.Call | None:
         return None
 
     value = node.value.value if isinstance(node.value, ast.Await) else node.value
+
     return value if isinstance(value, ast.Call) else None

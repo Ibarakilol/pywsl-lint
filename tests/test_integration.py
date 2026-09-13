@@ -14,11 +14,13 @@ SOURCES = sorted((Path(__file__).parent.parent / "src" / "pywsl").rglob("*.py"))
 
 
 @pytest.mark.parametrize("path", SOURCES, ids=lambda p: p.name)
-def test_fixing_our_own_source_converges_and_preserves_the_tree(path):
+def test_our_own_source_obeys_the_rules(path):
     source = source_module.from_path(path)
     result = fix(source, Config())
+
+    assert check_source(source, Config()) == []
     assert ast.dump(ast.parse(result.text)) == ast.dump(ast.parse(source.text))
-    assert check_source(source_module.from_text(result.text, str(path)), Config()) == []
+    assert result.changed is False
 
 
 def test_a_one_line_block_body_is_not_leading_whitespace(lint):

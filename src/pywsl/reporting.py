@@ -33,6 +33,7 @@ def render(
 
 def summary(total: int, *, fixed: int = 0, fixable: int = 0) -> str:
     lines: list[str] = []
+
     if fixed:
         noun = "error" if fixed == 1 else "errors"
         lines.append(f"Fixed {fixed} {noun}.")
@@ -55,6 +56,7 @@ def statistics(found: Iterable[Diagnostic]) -> str:
         return ""
 
     width = max(len(str(count)) for count in counts.values())
+
     return "\n".join(
         f"{count:>{width}}\t{code}\t[*] {name}"
         for (code, name), count in counts.most_common()
@@ -69,6 +71,7 @@ def _concise(source: SourceFile, diagnostic: Diagnostic) -> str:
 def _full(source: SourceFile, diagnostic: Diagnostic) -> list[str]:
     gutter = " " * len(str(diagnostic.line))
     text = source.line(diagnostic.line) if diagnostic.line <= source.line_count else ""
+
     return [
         f"{_concise(source, diagnostic)}",
         f"{gutter} |",
@@ -101,4 +104,5 @@ def _json(entries: Sequence[tuple[SourceFile, list[Diagnostic]]]) -> str:
         for source, found in entries
         for diagnostic in found
     ]
+
     return json.dumps(payload, indent=2)

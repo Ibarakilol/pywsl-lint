@@ -58,6 +58,7 @@ _LIST_KEYS = {"select", "extend-select", "ignore", "exclude", "extend-exclude"}
 def find_pyproject(start: Path) -> Path | None:
     start = start.resolve()
     directory = start if start.is_dir() else start.parent
+
     for candidate in (directory, *directory.parents):
         pyproject = candidate / "pyproject.toml"
         if pyproject.is_file():
@@ -88,10 +89,12 @@ def load(path: Path | None) -> Config:
 def from_table(table: dict[str, Any], origin: str = "<config>") -> Config:
     normalised = {key.replace("_", "-"): value for key, value in table.items()}
     unknown = set(normalised) - _BOOL_KEYS - _INT_KEYS - _LIST_KEYS
+
     if unknown:
         raise ConfigError(f"{origin}: unknown option(s): {', '.join(sorted(unknown))}")
 
     config = Config()
+
     for key in _BOOL_KEYS & set(normalised):
         value = normalised[key]
         if not isinstance(value, bool):

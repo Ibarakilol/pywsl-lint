@@ -17,6 +17,7 @@ class Check:
     name: str
     summary: str
     priority: int
+
     default: bool = True
 
 
@@ -230,7 +231,9 @@ DEFAULT_CHECKS: frozenset[str] = frozenset(c.name for c in _CHECKS if c.default)
 
 def resolve(selector: str) -> set[str]:
     """Expand a name, a code, a code prefix or ``ALL`` into check names."""
+
     selector = selector.strip()
+
     if not selector:
         return set()
 

@@ -35,6 +35,7 @@ def make(
     name: str, line: int, column: int, fix: FixKind, **fields: object
 ) -> Diagnostic:
     check = BY_NAME[name]
+
     return Diagnostic(
         code=check.code,
         name=check.name,
@@ -48,10 +49,13 @@ def make(
 
 def dedupe(diagnostics: list[Diagnostic]) -> list[Diagnostic]:
     """Keep the most specific diagnostic per line and fix direction."""
+
     best: dict[tuple[int, FixKind], Diagnostic] = {}
+
     for diagnostic in diagnostics:
         key = (diagnostic.line, diagnostic.fix)
         current = best.get(key)
+
         if current is None or (diagnostic.priority, diagnostic.code) < (
             current.priority,
             current.code,
