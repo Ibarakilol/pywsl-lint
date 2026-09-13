@@ -192,3 +192,21 @@ class _Stdin:
 
     def read(self) -> str:
         return self._text
+
+
+def test_an_explicit_path_is_linted_even_when_excluded(project):
+    hidden = project / ".venv"
+    hidden.mkdir()
+
+    write(project, ".venv/dirty.py", DIRTY)
+
+    assert main(["check", ".venv/dirty.py"]) == EXIT_VIOLATIONS
+
+
+def test_force_exclude_skips_an_explicit_path(project):
+    hidden = project / ".venv"
+    hidden.mkdir()
+
+    write(project, ".venv/dirty.py", DIRTY)
+
+    assert main(["check", "--force-exclude", ".venv/dirty.py"]) == EXIT_OK

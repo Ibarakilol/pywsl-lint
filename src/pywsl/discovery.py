@@ -12,7 +12,9 @@ from pywsl.config import Config
 SUFFIXES = frozenset({".py", ".pyi"})
 
 
-def collect(paths: Iterable[str | Path], config: Config) -> list[Path]:
+def collect(
+    paths: Iterable[str | Path], config: Config, *, force_exclude: bool = False
+) -> list[Path]:
     patterns = (*config.exclude, *config.extend_exclude)
     found: list[Path] = []
     seen: set[Path] = set()
@@ -21,7 +23,7 @@ def collect(paths: Iterable[str | Path], config: Config) -> list[Path]:
         path = Path(raw)
         if path.is_dir():
             found.extend(_walk(path, patterns))
-        else:
+        elif not force_exclude or not _excluded(path, Path(), patterns):
             found.append(path)
 
     return [p for p in found if not (p in seen or seen.add(p))]
@@ -45,9 +47,11 @@ def _walk(root: Path, patterns: tuple[str, ...]) -> list[Path]:
 
 
 def _excluded(path: Path, root: Path, patterns: tuple[str, ...]) -> bool:
-    relative = path.relative_to(root).as_posix()
+    relative = path.relative_to(root) if path.is_relative_to(root) else path
+    parts = relative.parts
 
     return any(
-        fnmatch(path.name, pattern) or fnmatch(relative, pattern)
+        fnmatch(relative.as_posix(), pattern)
+        or any(fnmatch(part, pattern) for part in parts)
         for pattern in patterns
     )

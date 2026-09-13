@@ -121,6 +121,12 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--extend-exclude", action="append", help="paths to skip")
 
     parser.add_argument(
+        "--force-exclude",
+        action="store_true",
+        help="apply exclusions to paths named on the command line",
+    )
+
+    parser.add_argument(
         "--stdin-filename", help="name to report for source read from stdin"
     )
 
@@ -284,7 +290,7 @@ def _read(
             return [(None, error, True)]
 
     results: list[tuple[SourceFile | None, ParseError | None, bool]] = []
-    for path in discovery.collect(paths, config):
+    for path in discovery.collect(paths, config, force_exclude=args.force_exclude):
         try:
             results.append((source_module.from_path(path), None, False))
         except ParseError as error:
