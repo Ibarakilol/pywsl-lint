@@ -5,8 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 PRIORITY_WHITESPACE = 0
-PRIORITY_SPECIAL = 10
-PRIORITY_CUDDLE = 20
+PRIORITY_SPECIAL = 5
+PRIORITY_CUDDLE = 10
+PRIORITY_GROUP = 20
 PRIORITY_AFTER = 30
 
 
@@ -185,14 +186,14 @@ _CHECKS: tuple[Check, ...] = (
         "WSL031",
         "assign-expr",
         "assignments should never be cuddled with expression statements",
-        PRIORITY_SPECIAL,
+        PRIORITY_GROUP,
         default=False,
     ),
     Check(
         "WSL032",
         "cuddle-group",
         "at most {cuddle_max_statements} statement(s) may be cuddled above a block",
-        PRIORITY_SPECIAL,
+        PRIORITY_GROUP,
     ),
     Check(
         "WSL033",
