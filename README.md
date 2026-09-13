@@ -1,4 +1,4 @@
-# pywsl
+# pywsl-lint
 
 Whitespace linter and formatter for Python — a port of
 [bombsimon/wsl](https://github.com/bombsimon/wsl) with rules adapted to Python
@@ -17,7 +17,7 @@ if os.path.exists(path):
     print(path)
 return data
 
-# after `pywsl format`
+# after `pywsl-lint format`
 data = read(path)
 
 count: int
@@ -31,8 +31,8 @@ return data
 ## Install
 
 ```sh
-uv tool install pywsl          # as a standalone tool
-uv add --dev pywsl             # into a project
+uv tool install pywsl-lint          # as a standalone tool
+uv add --dev pywsl-lint             # into a project
 ```
 
 Requires Python 3.11 or newer.
@@ -40,12 +40,12 @@ Requires Python 3.11 or newer.
 ## Use
 
 ```sh
-pywsl check .                  # report
-pywsl check --fix .            # report and fix
-pywsl check --diff .           # show what --fix would do
-pywsl format .                 # fix quietly, like a formatter
-pywsl format --check .         # exit 1 if anything would change
-pywsl rules                    # list every check
+pywsl-lint check .                  # report
+pywsl-lint check --fix .            # report and fix
+pywsl-lint check --diff .           # show what --fix would do
+pywsl-lint format .                 # fix quietly, like a formatter
+pywsl-lint format --check .         # exit 1 if anything would change
+pywsl-lint rules                    # list every check
 ```
 
 Exit codes match `ruff`: `0` clean, `1` violations remain, `2` bad invocation or
@@ -57,11 +57,11 @@ integration.
 
 ### Next to ruff
 
-`pywsl` only ever moves blank lines, which `ruff` and `black` do not touch
+`pywsl-lint` only ever moves blank lines, which `ruff` and `black` do not touch
 inside a block. Run them in either order:
 
 ```sh
-ruff check --fix . && ruff format . && pywsl format .
+ruff check --fix . && ruff format . && pywsl-lint format .
 ```
 
 ## Rules
@@ -108,11 +108,11 @@ statements may cuddle and only the last one needs the blank line below it.
 
 ## Configuration
 
-`[tool.pywsl]` in the nearest `pyproject.toml`. Keys accept dashes or
+`[tool.pywsl-lint]` in the nearest `pyproject.toml`. Keys accept dashes or
 underscores.
 
 ```toml
-[tool.pywsl]
+[tool.pywsl-lint]
 allow-first-in-block = true     # cuddle if the variable is used by the block's first statement
 allow-whole-block = false       # cuddle if the variable is used anywhere in the block
 branch-max-lines = 2            # block size above which return/break/continue need a blank line
@@ -131,7 +131,7 @@ name (`if`), a code (`WSL007`), a code prefix (`WSL00`) or `ALL`.
 
 ## How the Go rules were adapted
 
-| wsl (Go) | pywsl |
+| wsl (Go) | pywsl-lint |
 | --- | --- |
 | `var` / `const` / `type` | a bare annotation, `x: int` |
 | `inc-dec` | `aug-assign` |
@@ -172,8 +172,8 @@ above it is longer than that.
 uv sync
 uv run pytest
 uv run ruff check src tests && uv run ruff format --check src tests
-uv run pywsl check src tests
+uv run pywsl-lint check src tests
 ```
 
-The test suite lints pywsl's own source with its own rules, so the codebase
+The test suite lints pywsl-lint's own source with its own rules, so the codebase
 cannot drift from what it enforces.

@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from fnmatch import fnmatch
 from pathlib import Path
 
-from pywsl.config import Config
+from pywsl_lint.config import Config
 
 SUFFIXES = frozenset({".py", ".pyi"})
 

@@ -2,9 +2,9 @@
 
 from collections.abc import Iterator
 
-from pywsl import diagnostics
-from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.rules import Context, is_declaration
+from pywsl_lint import diagnostics
+from pywsl_lint.diagnostics import Diagnostic, FixKind
+from pywsl_lint.rules import Context, is_declaration
 
 _BLOCK_CHECKS = {
     "if": "after-if",

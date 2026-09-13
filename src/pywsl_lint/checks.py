@@ -1,4 +1,4 @@
-"""Registry of every check pywsl can report."""
+"""Registry of every check pywsl-lint can report."""
 
 from dataclasses import dataclass
 

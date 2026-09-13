@@ -1,7 +1,7 @@
 import pytest
 
-from pywsl import checks
-from pywsl.config import Config, ConfigError, from_table, load
+from pywsl_lint import checks
+from pywsl_lint.config import Config, ConfigError, from_table, load
 
 
 def test_defaults_enable_every_check_but_the_opt_in_ones():
@@ -67,7 +67,7 @@ def test_a_pyproject_without_our_table_uses_defaults(tmp_path):
 def test_a_pyproject_table_is_read(tmp_path):
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text(
-        "[tool.pywsl]\nbranch-max-lines = 4\nselect = ['if']\n", encoding="utf-8"
+        "[tool.pywsl-lint]\nbranch-max-lines = 4\nselect = ['if']\n", encoding="utf-8"
     )
 
     config = load(pyproject)

@@ -4,8 +4,8 @@ import json
 from collections import Counter
 from collections.abc import Iterable, Sequence
 
-from pywsl.diagnostics import Diagnostic
-from pywsl.source import SourceFile
+from pywsl_lint.diagnostics import Diagnostic
+from pywsl_lint.source import SourceFile
 
 FORMATS = ("full", "concise", "json", "github")
 
@@ -81,7 +81,7 @@ def _full(source: SourceFile, diagnostic: Diagnostic) -> list[str]:
 
 def _github(source: SourceFile, diagnostic: Diagnostic) -> str:
     return (
-        f"::error title=pywsl ({diagnostic.code}),file={source.path},"
+        f"::error title=pywsl-lint ({diagnostic.code}),file={source.path},"
         f"line={diagnostic.line},col={diagnostic.column},"
         f"endLine={diagnostic.line},endColumn={diagnostic.column}::"
         f"{source.path}:{diagnostic.line}:{diagnostic.column}: "

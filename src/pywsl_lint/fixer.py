@@ -2,11 +2,11 @@
 
 from dataclasses import dataclass
 
-from pywsl import source as source_module
-from pywsl.config import Config
-from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.engine import check_source
-from pywsl.source import SourceFile
+from pywsl_lint import source as source_module
+from pywsl_lint.config import Config
+from pywsl_lint.diagnostics import Diagnostic, FixKind
+from pywsl_lint.engine import check_source
+from pywsl_lint.source import SourceFile
 
 MAX_PASSES = 8
 

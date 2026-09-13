@@ -8,13 +8,13 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from pywsl import __version__, checks, discovery, fixer, reporting
-from pywsl import config as config_module
-from pywsl import source as source_module
-from pywsl.config import Config, ConfigError
-from pywsl.diagnostics import Diagnostic
-from pywsl.engine import check_source
-from pywsl.source import ParseError, SourceFile
+from pywsl_lint import __version__, checks, discovery, fixer, reporting
+from pywsl_lint import config as config_module
+from pywsl_lint import source as source_module
+from pywsl_lint.config import Config, ConfigError
+from pywsl_lint.diagnostics import Diagnostic
+from pywsl_lint.engine import check_source
+from pywsl_lint.source import ParseError, SourceFile
 
 EXIT_OK = 0
 EXIT_VIOLATIONS = 1
@@ -55,10 +55,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="pywsl",
+        prog="pywsl-lint",
         description="Whitespace linter for Python, in the spirit of wsl.",
     )
-    parser.add_argument("--version", action="version", version=f"pywsl {__version__}")
+    parser.add_argument(
+        "--version", action="version", version=f"pywsl-lint {__version__}"
+    )
 
     sub = parser.add_subparsers(dest="command")
 

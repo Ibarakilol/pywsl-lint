@@ -2,10 +2,10 @@ import textwrap
 
 import pytest
 
-from pywsl import source as source_module
-from pywsl.config import Config, apply_selectors
-from pywsl.engine import check_source
-from pywsl.fixer import fix
+from pywsl_lint import source as source_module
+from pywsl_lint.config import Config, apply_selectors
+from pywsl_lint.engine import check_source
+from pywsl_lint.fixer import fix
 
 
 def normalise(code: str) -> str:

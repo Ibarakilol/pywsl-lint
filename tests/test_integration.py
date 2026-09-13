@@ -3,12 +3,16 @@ from pathlib import Path
 
 import pytest
 
-from pywsl import source as source_module
-from pywsl.config import Config
-from pywsl.engine import check_source
-from pywsl.fixer import fix
+from pywsl_lint import source as source_module
+from pywsl_lint.config import Config
+from pywsl_lint.engine import check_source
+from pywsl_lint.fixer import fix
 
-SOURCES = sorted((Path(__file__).parent.parent / "src" / "pywsl").rglob("*.py"))
+SOURCES = sorted((Path(__file__).parent.parent / "src" / "pywsl_lint").rglob("*.py"))
+
+
+def test_the_self_check_has_something_to_check():
+    assert len(SOURCES) > 5
 
 
 @pytest.mark.parametrize("path", SOURCES, ids=lambda p: p.name)

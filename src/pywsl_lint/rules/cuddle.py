@@ -3,10 +3,10 @@
 import ast
 from collections.abc import Iterator
 
-from pywsl import diagnostics
-from pywsl.analysis import call_of, used_names
-from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.rules import Context, is_assignment, is_declaration, shares_name
+from pywsl_lint import diagnostics
+from pywsl_lint.analysis import call_of, used_names
+from pywsl_lint.diagnostics import Diagnostic, FixKind
+from pywsl_lint.rules import Context, is_assignment, is_declaration, shares_name
 
 
 def check(ctx: Context) -> Iterator[Diagnostic]:

@@ -4,9 +4,9 @@ import ast
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
-from pywsl.analysis import Block, Stmt, used_names
-from pywsl.config import Config
-from pywsl.source import SourceFile
+from pywsl_lint.analysis import Block, Stmt, used_names
+from pywsl_lint.config import Config
+from pywsl_lint.source import SourceFile
 
 
 @dataclass(frozen=True)

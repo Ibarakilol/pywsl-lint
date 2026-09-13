@@ -1,4 +1,4 @@
-from pywsl.cli import main
+from pywsl_lint.cli import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

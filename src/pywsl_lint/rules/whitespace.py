@@ -3,11 +3,11 @@
 from collections.abc import Iterator
 from itertools import pairwise
 
-from pywsl import diagnostics
-from pywsl.analysis import TRY_NODES, Block
-from pywsl.config import Config
-from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.source import SourceFile
+from pywsl_lint import diagnostics
+from pywsl_lint.analysis import TRY_NODES, Block
+from pywsl_lint.config import Config
+from pywsl_lint.diagnostics import Diagnostic, FixKind
+from pywsl_lint.source import SourceFile
 
 _TRY_CLAUSES = frozenset({"except", "else", "finally"})
 

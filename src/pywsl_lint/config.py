@@ -1,11 +1,11 @@
-"""Configuration loading for pywsl."""
+"""Configuration loading for pywsl-lint."""
 
 import tomllib
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-from pywsl import checks
+from pywsl_lint import checks
 
 DEFAULT_EXCLUDE: tuple[str, ...] = (
     ".bzr",
@@ -74,12 +74,12 @@ def load(path: Path | None) -> Config:
     except (OSError, tomllib.TOMLDecodeError) as error:
         raise ConfigError(f"{path}: {error}") from error
 
-    table = raw.get("tool", {}).get("pywsl")
+    table = raw.get("tool", {}).get("pywsl-lint")
     if table is None:
         return Config()
 
     if not isinstance(table, dict):
-        raise ConfigError(f"{path}: [tool.pywsl] must be a table")
+        raise ConfigError(f"{path}: [tool.pywsl-lint] must be a table")
 
     return from_table(table, origin=str(path))
 

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pywsl.cli import EXIT_ERROR, EXIT_OK, EXIT_VIOLATIONS, main
+from pywsl_lint.cli import EXIT_ERROR, EXIT_OK, EXIT_VIOLATIONS, main
 
 DIRTY = "setup()\nif ready:\n    run()\n"
 CLEAN = "setup()\n\nif ready:\n    run()\n"
@@ -10,7 +10,7 @@ CLEAN = "setup()\n\nif ready:\n    run()\n"
 
 @pytest.fixture
 def project(tmp_path, monkeypatch):
-    (tmp_path / "pyproject.toml").write_text("[tool.pywsl]\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text("[tool.pywsl-lint]\n", encoding="utf-8")
 
     monkeypatch.chdir(tmp_path)
 
@@ -114,7 +114,7 @@ def test_github_output_is_annotated(project, capsys):
 
     main(["check", "--output-format", "github", "dirty.py"])
 
-    assert capsys.readouterr().out.startswith("::error title=pywsl (WSL007)")
+    assert capsys.readouterr().out.startswith("::error title=pywsl-lint (WSL007)")
 
 
 def test_statistics_count_each_check(project, capsys):
@@ -181,7 +181,7 @@ def test_rules_as_json(project, capsys):
 
 def test_no_command_prints_help(capsys):
     assert main([]) == EXIT_ERROR
-    assert "usage: pywsl" in capsys.readouterr().out
+    assert "usage: pywsl-lint" in capsys.readouterr().out
 
 
 class _Stdin:

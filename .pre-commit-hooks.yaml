@@ -1,15 +1,15 @@
-- id: pywsl
-  name: pywsl
+- id: pywsl-lint
+  name: pywsl-lint
   description: Report blank-line violations in Python files
-  entry: pywsl check --force-exclude
+  entry: pywsl-lint check --force-exclude
   language: python
   types_or: [python, pyi]
   require_serial: false
 
-- id: pywsl-format
-  name: pywsl-format
+- id: pywsl-lint-format
+  name: pywsl-lint-format
   description: Fix blank-line placement in Python files
-  entry: pywsl format --force-exclude
+  entry: pywsl-lint format --force-exclude
   language: python
   types_or: [python, pyi]
   require_serial: false

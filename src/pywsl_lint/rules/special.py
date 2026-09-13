@@ -3,10 +3,10 @@
 import ast
 from collections.abc import Iterator
 
-from pywsl import diagnostics
-from pywsl.analysis import BLOCK_KINDS, used_names
-from pywsl.diagnostics import Diagnostic, FixKind
-from pywsl.rules import Context, is_assignment
+from pywsl_lint import diagnostics
+from pywsl_lint.analysis import BLOCK_KINDS, used_names
+from pywsl_lint.diagnostics import Diagnostic, FixKind
+from pywsl_lint.rules import Context, is_assignment
 
 _EXPR_KINDS = frozenset({"expr", "append", "thread-start", "queue-put"})
 

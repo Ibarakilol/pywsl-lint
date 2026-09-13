@@ -1,10 +1,10 @@
 """Runs every rule over a source file."""
 
-from pywsl.analysis import build_blocks
-from pywsl.config import Config
-from pywsl.diagnostics import Diagnostic, dedupe
-from pywsl.rules import Context, after, cuddle, special, whitespace
-from pywsl.source import SourceFile
+from pywsl_lint.analysis import build_blocks
+from pywsl_lint.config import Config
+from pywsl_lint.diagnostics import Diagnostic, dedupe
+from pywsl_lint.rules import Context, after, cuddle, special, whitespace
+from pywsl_lint.source import SourceFile
 
 _STATEMENT_RULES = (cuddle.check, after.check, special.check)
 

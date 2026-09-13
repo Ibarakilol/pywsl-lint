@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from pywsl.checks import BY_NAME
+from pywsl_lint.checks import BY_NAME
 
 
 class FixKind(Enum):

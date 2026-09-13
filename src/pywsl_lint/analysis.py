@@ -4,7 +4,7 @@ import ast
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 
-from pywsl.source import SourceFile
+from pywsl_lint.source import SourceFile
 
 THREAD_FACTORIES = frozenset({"Thread", "Process", "Timer"})
 TASK_FUNCTIONS = frozenset(
