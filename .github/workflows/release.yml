@@ -8,29 +8,9 @@ permissions: {}
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/ci.yml
     permissions:
       contents: read
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: astral-sh/setup-uv@v10
-        with:
-          enable-cache: true
-          python-version: ${{ matrix.python-version }}
-
-      - run: uv sync --locked
-
-      - run: uv run ruff check src tests
-
-      - run: uv run ruff format --check src tests
-
-      - run: uv run pywsl-lint check src tests
-
-      - run: uv run pytest
 
   publish:
     needs: check

@@ -178,6 +178,11 @@ uv run pywsl-lint check src tests
 The test suite lints pywsl-lint's own source with its own rules, so the codebase
 cannot drift from what it enforces.
 
+`ci.yml` runs the same four checks on every push to `main` and every pull
+request, across 3.11 to 3.13, and separately builds the distribution and runs
+`twine check` on it so packaging breaks show up here rather than at release
+time. `release.yml` calls that same workflow instead of restating it.
+
 ### Releasing
 
 Publishing runs on a tag and needs no credentials: PyPI is configured to trust
