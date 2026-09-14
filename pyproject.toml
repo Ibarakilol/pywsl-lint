@@ -9,7 +9,7 @@ license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Nikita Lopanov", email = "lopanovnikita0@gmail.com" }]
 keywords = ["linter", "formatter", "whitespace", "wsl", "ruff", "style"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3.11",
