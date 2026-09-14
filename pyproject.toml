@@ -19,6 +19,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.optional-dependencies]
+server = ["pygls>=2.1,<3"]
+
 [project.urls]
 Homepage = "https://github.com/Ibarakilol/pywsl-lint"
 Repository = "https://github.com/Ibarakilol/pywsl-lint"
@@ -35,7 +38,7 @@ build-backend = "hatchling.build"
 packages = ["src/pywsl_lint"]
 
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.9"]
+dev = ["pytest>=8.0", "ruff>=0.9", "pygls>=2.1,<3"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

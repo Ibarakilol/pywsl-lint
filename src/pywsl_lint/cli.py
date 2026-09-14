@@ -44,6 +44,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "rules":
             return _run_rules(args)
 
+        if args.command == "server":
+            return _run_server()
+
         return _run_lint(args)
     except ConfigError as error:
         print(f"error: {error}", file=sys.stderr)
@@ -95,6 +98,8 @@ def _parser() -> argparse.ArgumentParser:
 
     rules = sub.add_parser("rules", help="list the available checks")
     rules.add_argument("--output-format", choices=("text", "json"), default="text")
+
+    sub.add_parser("server", help="run the language server over stdio")
 
     return parser
 
@@ -157,6 +162,21 @@ def _run_rules(args: argparse.Namespace) -> int:
         print(f"{check.code} {mark} {check.name:<{width}}  {check.summary}")
 
     return EXIT_OK
+
+
+def _run_server() -> int:
+    try:
+        from pywsl_lint import server
+    except ImportError:
+        print(
+            "error: the language server needs extra dependencies, install them with"
+            ' `uv add "pywsl-lint[server]"` or `pip install "pywsl-lint[server]"`',
+            file=sys.stderr,
+        )
+
+        return EXIT_ERROR
+
+    return server.main()
 
 
 def _run_lint(args: argparse.Namespace) -> int:
