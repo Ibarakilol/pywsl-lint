@@ -1,6 +1,10 @@
+pywsl-lint is a port of wsl (https://github.com/bombsimon/wsl), from which it
+takes its rule set and several diagnostic messages. wsl is distributed under
+the MIT license, reproduced below.
+
 MIT License
 
-Copyright (c) 2026 Nikita Lopanov
+Copyright (c) 2018 Simon Sawert
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
