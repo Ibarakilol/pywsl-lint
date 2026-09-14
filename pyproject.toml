@@ -1,6 +1,6 @@
 [project]
 name = "pywsl-lint"
-version = "0.1.0"
+version = "0.1.1"
 description = "Whitespace linter for Python — a port of bombsimon/wsl with Python-native rules"
 readme = "README.md"
 requires-python = ">=3.11"
