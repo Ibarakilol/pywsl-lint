@@ -33,9 +33,11 @@ return data
 ```sh
 uv tool install pywsl-lint          # as a standalone tool
 uv add --dev pywsl-lint             # into a project
+uv add --dev "pywsl-lint[server]"   # with the editor integration
 ```
 
-Requires Python 3.11 or newer.
+Requires Python 3.11 or newer. The command line needs no dependencies at all;
+`[server]` is only for the language server and pulls in `pygls`.
 
 ## Use
 
@@ -46,6 +48,7 @@ pywsl-lint check --diff .           # show what --fix would do
 pywsl-lint format .                 # fix quietly, like a formatter
 pywsl-lint format --check .         # exit 1 if anything would change
 pywsl-lint rules                    # list every check
+pywsl-lint server                   # run the language server (needs [server])
 ```
 
 Exit codes match `ruff`: `0` clean, `1` violations remain, `2` bad invocation or
@@ -54,6 +57,45 @@ configuration.
 `--output-format` accepts `full` (default), `concise`, `json` and `github`.
 Reading from `-` lints stdin; pair it with `--stdin-filename` for editor
 integration.
+
+### In an editor
+
+`pywsl-lint server` speaks LSP over stdio: it underlines violations as you
+type, offers **Insert blank line** / **Remove blank line** as a quick fix on
+the line under the cursor, adds **Fix all pywsl-lint violations**, and
+implements document formatting, so format-on-save works without piping the
+file through the command line.
+
+It runs alongside `ruff` rather than inside it — ruff has no plugin system
+([astral-sh/ruff#283](https://github.com/astral-sh/ruff/issues/283) has been
+open since 2022) — and editors happily show diagnostics from both.
+
+Editors that attach an arbitrary language server need only configuration.
+Helix, in `languages.toml`:
+
+```toml
+[language-server.pywsl-lint]
+command = "pywsl-lint"
+args = ["server"]
+
+[[language]]
+name = "python"
+language-servers = ["ruff", "pywsl-lint"]
+```
+
+Neovim, with `nvim-lspconfig` present:
+
+```lua
+vim.lsp.config("pywsl_lint", {
+  cmd = { "pywsl-lint", "server" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", ".git" },
+})
+vim.lsp.enable("pywsl_lint")
+```
+
+VS Code cannot launch a bare language server on its own and needs a client
+extension; there is none yet.
 
 ### Next to ruff
 
